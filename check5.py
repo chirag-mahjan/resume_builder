@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import messagebox, filedialog
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas as pdf_canvas
-
+import textwrap
 from reportlab.lib import colors
 import os
 
@@ -64,7 +64,10 @@ def generate_pdf():
     y = height - 130
 
     # Helper function to draw sections
-    def section(title, content):
+
+
+# Helper function to draw sections with word wrap
+    def section(title, content, max_width=80):
         nonlocal y
         if not content.strip():
             return
@@ -75,12 +78,16 @@ def generate_pdf():
         c.setFillColor(colors.black)
         c.setFont("Helvetica", 11)
         text = c.beginText(70, y)
+
         for line in content.split("\n"):
             if line.strip():
-                text.textLine("• " + line.strip())
-                y -= 14
+                wrapped_lines = textwrap.wrap(line.strip(), width=max_width)  # wrap text
+                for wline in wrapped_lines:
+                    text.textLine("• " + wline)
+                    y -= 14
         c.drawText(text)
         y -= 15
+
 
     # Objective (paragraph style)
     if objective:
@@ -91,9 +98,14 @@ def generate_pdf():
         c.setFillColor(colors.black)
         c.setFont("Helvetica", 11)
         text = c.beginText(70, y)
-        text.textLines(objective)
+        for line in objective.split("\n"):
+            wrapped_lines = textwrap.wrap(line, width=100)  # adjust width to fit page
+            for wline in wrapped_lines:
+                text.textLine(wline)
+                y -= 14
         c.drawText(text)
-        y -= (14 * (objective.count('\n') + 2))
+        y -= 15
+
 
     # Other Sections
     section("Education", education)
@@ -193,7 +205,7 @@ label("Choose Template Theme")
 color_var = tk.StringVar(value="Blue")
 tk.OptionMenu(form_frame, color_var, "Blue", "Teal", "Gray", "Gold").pack(pady=5)
 
-tk.Button(form_frame, text="Generate Professional Resume", bg="#56A7DD", fg="white",
+tk.Button(form_frame, text="Generate Professional Resume", bg="#007ACC", fg="white",
           font=("Arial", 12, "bold"), command=generate_pdf).pack(pady=20)
 
 # Allow mousewheel scrolling
