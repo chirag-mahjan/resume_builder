@@ -15,7 +15,12 @@ def generate_pdf():
         messagebox.showerror("Error", "Please fill all required fields!")
         return
 
-    file_name = name.replace(" ", "_") + "_Resume.pdf"
+    import os
+
+# Save in the same folder as this script
+    save_path = os.path.join(os.getcwd(), name.replace(" ", "_") + "_Resume.pdf")
+    file_name = save_path
+
     c = canvas.Canvas(file_name, pagesize=letter)
     width, height = letter
 
@@ -51,7 +56,8 @@ def generate_pdf():
     c.drawText(text)
 
     c.save()
-    messagebox.showinfo("Success", f"Resume generated: {file_name}")
+    messagebox.showinfo("Success", f"Resume generated:\n{file_name}")
+
 
 # GUI setup
 root = tk.Tk()
