@@ -153,6 +153,12 @@ def generate_pdf(preview_mode=False):
         story.append(Paragraph(f"<b>Skills</b><br/>{skills}", content_style))
         story.append(Paragraph(f"<b>Projects</b><br/>{projects}", content_style))
         story.append(Paragraph(f"<b>Achievements</b><br/>{achievements}", content_style))
+        # Add custom sections for Bold Gold
+        for sec_name, box in custom_sections:
+            content = box.get("1.0", tk.END).strip()
+            if content:
+                story.append(Paragraph(f"<b>{sec_name}</b><br/>{content}", content_style))
+
 
         frame = Frame(frame_x, frame_y, frame_width, frame_height, showBoundary=0)
         frame.addFromList(story, c)
@@ -388,6 +394,23 @@ def open_resume_builder():
     label("Achievements")
     entry_achievements = textbox(4)
 
+    custom_section_container = tk.Frame(builder_root, bg="#f9f9f9")
+    custom_section_container.pack(pady=5, fill="x")
+
+
+    custom_sections = []
+    def add_section():
+        sec_name = tk.simpledialog.askstring("New Section", "Enter section name:")
+        if sec_name:
+            lbl = tk.Label(custom_section_container, text=sec_name, font=("Arial", 10, "bold"), bg="#f9f9f9")
+            lbl.pack(anchor="w", padx=20)
+            box = tk.Text(custom_section_container, width=70, height=3, wrap="word")
+            box.pack(pady=3)
+            custom_sections.append((sec_name, box))
+
+
+    tk.Button(builder_root, text="➕ Add Custom Section", command=add_section, bg="#444", fg="white").pack(pady=4)
+
     label("Choose Template Theme")
     color_var = tk.StringVar(value="Blue")
     tk.OptionMenu(builder_root, color_var, "Blue", "Teal", "Gray", "Gold").pack(pady=5)
@@ -404,17 +427,7 @@ def open_resume_builder():
 
     tk.Button(builder_root, text="💾 Save Info", command=save_settings, bg="#444", fg="white").pack(pady=3)
 
-    custom_sections = []
-    def add_section():
-        sec_name = tk.simpledialog.askstring("New Section", "Enter section name:")
-        if sec_name:
-            lbl = tk.Label(builder_root, text=sec_name, font=("Arial", 10, "bold"), bg="#f9f9f9")
-            lbl.pack(anchor="w", padx=20)
-            box = tk.Text(builder_root, width=70, height=3, wrap="word")
-            box.pack(pady=3)
-            custom_sections.append((sec_name, box))
-
-    tk.Button(builder_root, text="➕ Add Custom Section", command=add_section, bg="#444", fg="white").pack(pady=4)
+    
 
     load_settings()
 
